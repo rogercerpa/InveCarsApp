@@ -25,4 +25,7 @@ const db = DynamoDBDocument.from(new DynamoDB(dynamoConfig), {
   },
 });
 
-export { db };
+const fetcher = async <T,>(url: string) =>
+  fetch(url).then((res) => res.json() as T);
+
+export { db, fetcher };
