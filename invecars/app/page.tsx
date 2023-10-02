@@ -3,8 +3,9 @@ import { UserButton } from "@clerk/nextjs";
 import getCurrentUser from "@/utils/db/get-current-user";
 import Button from "@/components/Button";
 import getPlan from "@/utils/get-plan";
+import PlanTable from "@/components/PlanTable";
 
-export default function Home() {
+export default async function Home() {
 
   const user = await getCurrentUser();
 
@@ -66,6 +67,7 @@ export default function Home() {
         </p>
       </div>
       <Button plan={plan} current={buttonClicks} />
+      {plan.TIER === "FREE" ? <PlanTable /> : null}
     </div>
 
       <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">

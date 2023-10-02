@@ -47,7 +47,7 @@ export default function SignInForm() {
           <input
             type="text"
             {...register("email", { required: true })}
-            className="text-lg p-2 px-3 rounded-md"
+            className="text-lg p-2 px-3 rounded-md text-black"
           />
         </div>
         <div className="flex flex-col">
@@ -55,7 +55,7 @@ export default function SignInForm() {
           <input
             type="password"
             {...register("password", { required: true })}
-            className="text-lg p-2 px-3 rounded-md"
+            className="text-lg p-2 px-3 rounded-md text-black"
           />
         </div>
         <button
