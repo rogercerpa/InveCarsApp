@@ -6,6 +6,18 @@ import getUserById from "@/utils/db/get-user-by-id";
 import { db } from "@/config";
 
 export async function POST(request: Request) {
+
+  function getEnvVariable(name: string): string {
+    const value = process.env[name];
+    if (!value) {
+      throw new Error(`${name} environment variable is not set`);
+    }
+    return value;
+  }
+
+  const STRIPE_SECRET_KEY = getEnvVariable('STRIPE_SECRET_KEY');
+  const STRIPE_WEBHOOK_SECRET = getEnvVariable('STRIPE_WEBHOOK_SECRET');
+
   try {
     const sig = request?.headers?.get("stripe-signature");
     const requestBody = await request.text();
@@ -14,10 +26,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No signature" }, { status: 400 });
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2022-11-15",
+    const stripe = new Stripe(STRIPE_SECRET_KEY, {
+      apiVersion: "2023-08-16",
     });
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const endpointSecret = STRIPE_WEBHOOK_SECRET;
 
     let event;
 
