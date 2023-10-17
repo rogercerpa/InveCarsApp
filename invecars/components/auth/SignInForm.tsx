@@ -3,22 +3,23 @@
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useState } from "react"; // Added for error handling
 
-interface SignUpFormValues {
+interface SignInFormValues {
   email: string;
   password: string;
 }
 
 export default function SignInForm() {
   const router = useRouter();
-  const { register, handleSubmit } = useForm<SignUpFormValues>();
+  const { register, handleSubmit } = useForm<SignInFormValues>();
   const { signIn, setActive } = useSignIn();
+  const [error, setError] = useState<string | null>(null); // State for error handling
 
-  const onSubmit = async ({ email, password }: SignUpFormValues) => {
+  const onSubmit = async ({ email, password }: SignInFormValues) => {
     try {
       if (!signIn) {
-        // eslint-disable-next-line no-console
-        console.log("Clerk sign in not avaialble");
+        console.log("Clerk sign in not available");
         return null;
       }
 
@@ -29,9 +30,23 @@ export default function SignInForm() {
 
       await setActive({ session: response.createdSessionId });
       router.push("/");
+
+      // Clear any previous error messages
+      setError(null);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
+      if (error.response) {
+        // Server returned an error response
+        console.error("Server Error:", error.response.data);
+
+        // Display the server error message to the user
+        setError("An error occurred during sign-in. Please check your credentials.");
+      } else {
+        // An error occurred but no response was received (e.g., network error)
+        console.error("An error occurred during sign-in:", error);
+
+        // Display a generic error message to the user
+        setError("An error occurred during sign-in. Please try again later.");
+      }
     }
   };
 
@@ -64,6 +79,9 @@ export default function SignInForm() {
         >
           Continue
         </button>
+        
+        {/* Display error message if an error occurred */}
+        {error && <p className="text-red-500">{error}</p>}
       </div>
     </form>
   );
