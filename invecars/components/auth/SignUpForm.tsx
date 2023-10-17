@@ -1,26 +1,26 @@
 "use client";
 
 import { useSignUp } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Changed from "next/navigation"
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface SignUpFormValues {
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export default function SignUpForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const { register, handleSubmit } = useForm<SignUpFormValues>();
+  const { register, handleSubmit, watch, formState } = useForm<SignUpFormValues>();
   const { signUp } = useSignUp();
 
   const onSubmit = async ({ email, password }: SignUpFormValues) => {
     try {
       if (!signUp) {
-        // eslint-disable-next-line no-console
-        console.log("Clerk sign up not avaialble");
+        console.log("Clerk sign up not available");
         return null;
       }
 
@@ -38,10 +38,12 @@ export default function SignUpForm() {
       }
     } catch (err) {
       setError("Email address already in use");
-      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
+
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
   return (
     <form
@@ -66,6 +68,20 @@ export default function SignUpForm() {
             className="text-lg p-2 px-3 rounded-md text-black"
           />
         </div>
+        <div className="flex flex-col">
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            {...register("confirmPassword", {
+              required: true,
+              validate: (value) => value === password || "Passwords do not match",
+            })}
+            className="text-lg p-2 px-3 rounded-md text-black"
+          />
+        </div>
+        {formState.errors.confirmPassword && (
+          <p className="text-red-500">{formState.errors.confirmPassword.message}</p>
+        )}
         <button
           type="submit"
           className="bg-blue-400 text-white font-medium py-2 rounded-md"
