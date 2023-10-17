@@ -33,7 +33,7 @@ export default function SignInForm() {
 
       // Clear any previous error messages
       setError(null);
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         // Server returned an error response
         console.error("Server Error:", error.response.data);
