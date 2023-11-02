@@ -17,7 +17,7 @@ export default function SignUpForm() {
   const { register, handleSubmit, watch, formState } = useForm<SignUpFormValues>();
   const { signUp } = useSignUp();
 
-  const onSubmit = async ({ email, password }: SignUpFormValues) => {
+  const onSubmit = async ({ email, password, confirmPassword }: SignUpFormValues) => {
     try {
       if (!signUp) {
         console.log("Clerk sign up not available");
@@ -37,8 +37,15 @@ export default function SignUpForm() {
         router.push("/sign-up/verify-email-address");
       }
     } catch (err) {
-      setError("Email address already in use");
-      console.error(err);
+      if (err instanceof Error) {
+        // Now TypeScript knows that err is an Error object
+        console.error(err.message);
+        setError(err.message || "An unknown error occurred");
+      } else {
+        // If err is not an Error object, you might want to log it for debugging purposes
+        console.error(err);
+        setError("An unknown error occurred");
+      }
     }
   };
 
